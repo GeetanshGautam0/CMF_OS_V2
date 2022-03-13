@@ -13,5 +13,37 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Sector 1">
+      <UniqueIdentifier>{6e18a0f0-e4a0-4200-8665-8f6a8c4d13b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sector 2+">
+      <UniqueIdentifier>{2824f26f-4341-460d-a08f-d7ed336b8ad9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="print.asm">
+      <Filter>Source Files\Sector 1</Filter>
+    </None>
+    <None Include="bootloader.asm">
+      <Filter>Source Files\Sector 1</Filter>
+    </None>
+    <None Include="compileasm.bat">
+      <Filter>Source Files\Sector 1</Filter>
+    </None>
+    <None Include="diskread.asm">
+      <Filter>Source Files\Sector 1</Filter>
+    </None>
+    <None Include="gdt.asm">
+      <Filter>Source Files\Sector 2+</Filter>
+    </None>
+    <None Include="CPUID.asm">
+      <Filter>Source Files\Sector 2+</Filter>
+    </None>
+    <None Include="simplepaging.asm">
+      <Filter>Source Files\Sector 2+</Filter>
+    </None>
+    <None Include="MainEntry.asm">
+      <Filter>Source Files\Sector 2+</Filter>
+    </None>
   </ItemGroup>
 </Project>

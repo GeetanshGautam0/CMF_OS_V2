@@ -123,6 +123,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="bootloader.asm" />
+    <None Include="compileasm.bat" />
+    <None Include="CPUID.asm" />
+    <None Include="diskread.asm" />
+    <None Include="MainEntry.asm" />
+    <None Include="gdt.asm" />
+    <None Include="print.asm" />
+    <None Include="simplepaging.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
