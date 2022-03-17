@@ -1,0 +1,5 @@
+[32 bit]
+* Graphics:
+    [i] The address of any character (VGA Colour Text Mode) can be calculated using the following formula:
+        0xb8000 + 2 * (<row> * 80 + <col>)
+

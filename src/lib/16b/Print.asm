@@ -1,3 +1,6 @@
+NEWLINE equ 0xA
+CR equ 0xD
+
 PrintString:
     ; string to print in bx
     mov ah, 0x0e            ; Magic

@@ -1,34 +1,35 @@
-LoadDisk:
-    push dx
+PROGRAM_SPACE equ 0x7e00
 
-    mov ah, 0x02                                ; BIOS read sector function
-    mov al, dh                                  ; Number of sectors to be loaded
-    mov ch, 0x00                                ; Cylinder 0
-    mov dh, 0x00                                ; Head 0
-    mov cl, 0x02                                ; Start reading from the 2nd sector
-                                                ; (the sector after the boot sector)
-    int 0x13                                    ; Interrupt to read
-    jc _disk_read_error                         ; Error
+ReadDisk:
+    mov ah, 0x02                        ; BIOS function to read the disk
+    mov bx, PROGRAM_SPACE               ; Tell BIOS where to put the new data
+    mov al, 4                           ; Load 4 sectors
+    mov dl, [BOOT_DISK]                 ; Which disk to read from
+    mov ch, 0x00                        ; Cylinder 0
+    mov dh, 0x00                        ; Head 0
+    mov cl, 0x02                        ; Read from sector 2
 
-    pop dx
-    cmp dh, al
-    jne _disk_read_error_2
+    int 0x13                            ; Reads data
+    jc DR_fail
+
+    call DR_success
 
     ret
 
-_disk_read_error:
-    mov bx, DISK_READ_ERROR_MSG                 ; Load error message
-    call PrintString                            ; Print the error string
-    
-    jmp $                                       ; Stay here
 
-_disk_read_error_2:
-    mov bx, DISK_READ_ERROR_MSG                 ; Load error message
-    call PrintString                            ; Print the error string
-    
-    jmp $                                       ; Stay here
+DR_fail:
+    mov bx, DISK_READ_FAILURE_STR
+    call PrintString
+
+    jmp $
+
+DR_success:
+    mov bx, DISK_READ_SUCCESS_STR
+    call PrintString
+
+    ret
 
 ; Variables
-DISK_READ_ERROR_MSG db 'Failed to read disk (1) [FATAL]', 0
-DISK_READ_ERROR_MSG_2 db 'Failed to read disk (2) [FATAL]', 0
+DISK_READ_FAILURE_STR db 'Failed to read disk (0)', NEWLINE, CR, 0
+DISK_READ_SUCCESS_STR db 'Successfully read disk (0)', NEWLINE, CR, 0
 BOOT_DISK db 0
