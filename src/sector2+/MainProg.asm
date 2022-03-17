@@ -69,7 +69,7 @@ StartProtectedMode:
 
 Start64Bit:
     mov edi, VIDEO_MEMORY
-    mov rax, 0x1f201f201f201f20
+    mov rax, 0x30202f060207020
     mov ecx, 500
     rep stosq
 
