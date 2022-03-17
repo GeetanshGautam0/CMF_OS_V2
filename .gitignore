@@ -2,3 +2,5 @@ assembler/__pycache__
 assembler/build
 assembler/dist
 assembler/build/*
+.vs/*
+.vs
