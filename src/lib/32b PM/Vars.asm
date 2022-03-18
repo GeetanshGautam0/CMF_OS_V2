@@ -1,3 +1,0 @@
-[bits 32]
-
-PM_VIDEO_MEMORY equ 0xb8000

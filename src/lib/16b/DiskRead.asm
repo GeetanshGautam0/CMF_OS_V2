@@ -1,35 +1,30 @@
-PROGRAM_SPACE equ 0x7e00
+
+PROGRAM_SPACE equ 0x8000
 
 ReadDisk:
-    mov ah, 0x02                        ; BIOS function to read the disk
-    mov bx, PROGRAM_SPACE               ; Tell BIOS where to put the new data
-    mov al, 4                           ; Load 4 sectors
-    mov dl, [BOOT_DISK]                 ; Which disk to read from
-    mov ch, 0x00                        ; Cylinder 0
-    mov dh, 0x00                        ; Head 0
-    mov cl, 0x02                        ; Read from sector 2
 
-    int 0x13                            ; Reads data
-    jc DR_fail
+	mov ah, 0x02
+	mov bx, PROGRAM_SPACE
+	mov al, 32
+	mov dl, [BOOT_DISK]
+	mov ch, 0x00
+	mov dh, 0x00
+	mov cl, 0x02
 
-    call DR_success
+	int 0x13
 
-    ret
+	jc DiskReadFailed
 
+	ret
 
-DR_fail:
-    mov bx, DISK_READ_FAILURE_STR
-    call PrintString
+BOOT_DISK:
+	db 0
 
-    jmp $
+DiskReadErrorString:
+	db 'Disk Read Failed',0
 
-DR_success:
-    mov bx, DISK_READ_SUCCESS_STR
-    call PrintString
+DiskReadFailed:
+	mov bx, DiskReadErrorString
+	call PrintString
 
-    ret
-
-; Variables
-DISK_READ_FAILURE_STR db 'Failed to read disk (0)', NEWLINE, CR, 0
-DISK_READ_SUCCESS_STR db 'Successfully read disk (0)', NEWLINE, CR, 0
-BOOT_DISK db 0
+	jmp $

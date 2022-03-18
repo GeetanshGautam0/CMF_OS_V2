@@ -1,6 +1,7 @@
+
 PageTableEntry equ 0x1000
 
-SetupIdentityPaging:
+SetUpIdentityPaging:
 
 	mov edi, PageTableEntry
 	mov cr3, edi
@@ -22,7 +23,7 @@ SetupIdentityPaging:
 		loop .SetEntry
 
 	mov eax, cr4
-	or	eax, 1 << 5
+	or eax, 1 << 5
 	mov cr4, eax
 
 	mov ecx, 0xC0000080
