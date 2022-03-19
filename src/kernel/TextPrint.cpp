@@ -139,3 +139,32 @@ void Backspace(uint_8 color = ScreenColor) {
     *(VGA_MEMORY + CursorPosition * 2) = 0x20;
     *(VGA_MEMORY + CursorPosition * 2 + 1) = color;
 }
+
+void Newline() {
+    uint_8 CurrRow = (CursorPosition - (CursorPosition % VGA_WIDTH)) / 80;
+}
+
+char integerToStringOutput[128]; 
+template<typename T>
+const char* IntToStr(T value) {
+    uint_8 size = 0;
+    uint_64 sizeTester = (uint_64)value;
+    while (sizeTester / 10 > 0) {
+        sizeTester /= 10;
+        size ++; 
+    }
+    uint_8 index = 0;
+    uint_64 newVal = (uint_64)value;
+
+    while (newVal / 10 > 0) {
+        uint_8 remainder = newVal % 10;
+        newVal /= 10;
+        integerToStringOutput[size - index] = remainder + 48;
+        index ++;
+    }
+
+    uint_8 remainder = newVal % 10;
+    integerToStringOutput[size - index] = remainder + 48;
+    integerToStringOutput[size + 1] = 0;
+    return integerToStringOutput;
+}

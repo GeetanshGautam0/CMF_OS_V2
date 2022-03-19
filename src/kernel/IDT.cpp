@@ -19,11 +19,6 @@ extern IDT64 _idt[256];
 extern uint_64 isr1;
 extern "C" void LoadIDT();
 
-uint_8 lastKBScanCode = NULL;
-bool KBToggle = false;
-bool PRINT_KB_INPUT = true;
-bool DEBUG_PRINT_SCAN_CODE = true;
-
 void InitializeIDT(){
 
 	_idt[1].zero        = 0;
@@ -41,23 +36,7 @@ void InitializeIDT(){
 	LoadIDT();
 }
 
-void MainKeyboardHandler (uint_8 scanCode, uint_8 chr) {
-    lastKBScanCode = scanCode;
-    KBToggle = !KBToggle;
-
-    if (scanCode < 0x3a && PRINT_KB_INPUT) {
-        switch(scanCode) {
-            case (0x0E): {
-                Backspace();
-                break;
-            }
-            default: PrintChar(chr);
-        }
-    }
-    if (scanCode < 0x3a && DEBUG_PRINT_SCAN_CODE) PrintString(HexToString(scanCode));
-
-    return;
-}
+void (*MainKeyboardHandler)(uint_8 scanCode, uint_8 chr);
 
 extern "C" void isr1_handler(){
 	uint_8 scanCode = inb(0x60);
@@ -72,10 +51,4 @@ extern "C" void isr1_handler(){
 
 	outb(0x20, 0x20);
 	outb(0xa0, 0x20);
-}
-
-uint_8 AwaitKBInput(uint_8 ScanCode, bool AnyKey = true) {
-    bool org = KBToggle;
-    while (lastKBScanCode == NULL || (KBToggle == org && (AnyKey || lastKBScanCode == ScanCode))) continue;
-    return lastKBScanCode;
 }
