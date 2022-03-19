@@ -6,6 +6,7 @@ INPUT
 (
     bin/main_prog.o
     bin/kernel.o
+    bin/binaries.o
 )
 
 OUTPUT

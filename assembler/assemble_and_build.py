@@ -48,7 +48,8 @@ if __name__ == "__main__":
             
         else:    
             rc(f'nasm src\\sector1\\bootloader.asm -f bin -o bin\\bootloader.bin')
-            rc(f'nasm src\\sector2+\\MainProg.asm -f elf64 -o bin\\main_prog.o')        
+            rc(f'nasm src\\sector2+\\MainProg.asm -f elf64 -o bin\\main_prog.o') 
+            rc(f"nasm src\sector2+\\binaries.asm -f elf64 -o bin\\binaries.o")
             rc(f'{WSL_PATH}/x86_64-elf-gcc -Ttext 0x8000 -ffreestanding -mno-red-zone -m64 -c "./src/kernel/Kernel.cpp" -o "./bin/kernel.o"')
             rc(f'{WSL_PATH}/x86_64-elf-ld -T"link.ld"')
             rc(f'copy /b bin\\bootloader.bin+bin\\kernel.bin dist\\boot.flp')

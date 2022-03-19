@@ -1,6 +1,8 @@
 #include "TextPrint.cpp"
 #include "typedefs.cpp"
 
+extern const char PBText[];
+
 uint_8 StatusColor = BACKGROUND_BLINKING_BLUE | FOREGROUND_LIGHT_GRAY;
 uint_8 StatusConstantColor = BACKGROUND_BLUE | FOREGROUND_LIGHT_GRAY;
 uint_8 StatusTitleColor = BACKGROUND_BLUE | FOREGROUND_LIGHT_CYAN;
@@ -55,6 +57,8 @@ extern "C" void _start() {
 
 	InitUI();
 	UpdateStatus("Ready");
+
+	PrintString(PBText);
 
 	return;
 }
