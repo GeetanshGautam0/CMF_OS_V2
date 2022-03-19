@@ -15,18 +15,6 @@ uint_8 ScreenColor = BACKGROUND_BLACK | FOREGROUND_WHITE;
 
 bool SysCommand = false;
 
-void SetCursorPosition(uint_16 position) {
-    if (position > 2000) position = 2000;
-    else if (position < 0) position = 0;
-
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, (uint_8)(position & 0xff));
-    outb(0x3d4, 0x0e);
-    outb(0x3d5, (uint_8)((position >> 8) & 0xFF));
-
-    CursorPosition = position;
-}
-
 uint_16 PositionFromCoords(uint_8 x, uint_8 y) {
     if (!SysCommand) {
         if (x > MAX_X) x = MAX_X;
@@ -36,6 +24,22 @@ uint_16 PositionFromCoords(uint_8 x, uint_8 y) {
         else if (y < 0) y = 0;
     }
     return y * VGA_WIDTH + x;
+}
+
+void SetCursorPosition(uint_16 position) {
+    uint_16 POS;
+    
+    if (position > (SysCommand ? 2000 : PositionFromCoords(80, 22))) 
+        POS = (SysCommand ? 2000 : PositionFromCoords(80, 22));
+    else if (position < 0) POS = 0;
+    else POS = position;
+    
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint_8)(POS & 0xff));
+    outb(0x3d4, 0x0e);
+    outb(0x3d5, (uint_8)((POS >> 8) & 0xFF));
+
+    CursorPosition = POS;
 }
 
 void PrintString(const char* str, uint_8 color = ScreenColor, unsigned char* MEM_ADDR = NULL) {
@@ -121,4 +125,17 @@ void FillRow(uint_8 RowIndex, uint_8 Color) {
         *(i + 1) = Color;
     }
 
+}
+
+void PrintChar(char chr, uint_8 color = ScreenColor) {
+    *(VGA_MEMORY + CursorPosition * 2) = chr;
+    *(VGA_MEMORY + CursorPosition * 2 + 1) = color;
+
+    SetCursorPosition(CursorPosition + 1);
+}
+
+void Backspace(uint_8 color = ScreenColor) {
+    SetCursorPosition(CursorPosition == 0 ? 0 : CursorPosition - 1);
+    *(VGA_MEMORY + CursorPosition * 2) = 0x20;
+    *(VGA_MEMORY + CursorPosition * 2 + 1) = color;
 }

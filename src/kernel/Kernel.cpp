@@ -1,5 +1,6 @@
 #include "TextPrint.cpp"
 #include "typedefs.cpp"
+#include "IDT.cpp"
 
 extern const char PBText[];
 
@@ -17,7 +18,7 @@ void UpdateStatus(const char * Status) {
 	FillRow(24, StatusConstantColor);
 	SetCursorPosition(PositionFromCoords(0, 24));
 	PrintString(Status, StatusColor);
-	SetCursorPosition(PositionFromCoords(65, 24));
+	SetCursorPosition(PositionFromCoords(62, 24));
 	PrintString(name_string, StatusConstantColor);
 	SetCursorPosition(ogPos);
 
@@ -55,10 +56,22 @@ extern "C" void _start() {
 
 	for (int i = 0; i < 10000; i++) continue;
 
+	
 	InitUI();
-	UpdateStatus("Ready");
+	
+	ClearScreen(BackgroundColor);
+	UpdateStatus("Initializing IDT...");
+	InitializeIDT();
+
+	ClearScreen(BackgroundColor);
+	UpdateStatus("Waiting...");
 
 	PrintString(PBText);
+	DEBUG_PRINT_SCAN_CODE = false;
+	AwaitKBInput(0x00, true);
+
+	ClearScreen();
+	UpdateStatus("Ready");
 
 	return;
 }
