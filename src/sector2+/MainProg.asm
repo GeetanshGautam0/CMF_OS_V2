@@ -6,6 +6,9 @@ jmp EnterProtectedMode
 
 
 EnterProtectedMode:
+	mov bx, EnteringText
+	call PrintString
+
 	call EnableA20
 	cli
 	lgdt [gdt_descriptor]
@@ -19,6 +22,8 @@ EnableA20:
 	or al, 2
 	out 0x92, al
 	ret
+
+EnteringText db 'Entering 32-bit protected mode', NEWLINE, CR, NULL
 
 [bits 32]
 
@@ -34,22 +39,15 @@ StartProtectedMode:
 	mov fs, ax
 	mov gs, ax
 
-	mov [0xb8000], byte 'H'
-	mov [0xb8002], byte 'e'
-	mov [0xb8004], byte 'l'
-	mov [0xb8006], byte 'l'
-	mov [0xb8008], byte 'o'
-	mov [0xb800a], byte ' '
-	mov [0xb800c], byte 'W'
-	mov [0xb800e], byte 'o'
-	mov [0xb8010], byte 'r'
-	mov [0xb8012], byte 'l'
-	mov [0xb8014], byte 'd'
-
+	mov [0xb8000], byte '1'
 	call DetectCPUID
+	mov [0xb8000], byte '2'
 	call DetectLongMode
+	mov [0xb8000], byte '3'
 	call SetUpIdentityPaging
+	mov [0xb8000], byte '4'
 	call EditGDT
+	mov [0xb8000], byte '5'
 	jmp codeseg:Start64Bit
 
 [bits 64]
@@ -58,7 +56,7 @@ StartProtectedMode:
 
 Start64Bit:
 	mov edi, 0xb8000
-	mov rax, 0x1f201f201f201f20
+	mov rax, 0x0E200E200E200E20
 	mov ecx, 500
 	rep stosq
 
