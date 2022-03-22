@@ -146,7 +146,7 @@ void Newline() {
 
 char integerToStringOutput[128]; 
 template<typename T>
-const char* IntToStr(T value) {
+const string IntToStr(T value) {
     uint_8 size = 0;
     uint_64 sizeTester = (uint_64)value;
     while (sizeTester / 10 > 0) {

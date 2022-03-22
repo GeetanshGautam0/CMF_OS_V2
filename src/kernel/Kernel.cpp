@@ -1,6 +1,7 @@
 #include "TextPrint.cpp"
 #include "typedefs.cpp"
 #include "IDT.cpp"
+// #include "string.cpp"
 
 extern const char PBText[];
 
@@ -9,25 +10,69 @@ uint_8 StatusConstantColor = BACKGROUND_BLUE | FOREGROUND_LIGHT_GRAY;
 uint_8 StatusTitleColor = BACKGROUND_BLUE | FOREGROUND_LIGHT_CYAN;
 uint_8 BackgroundColor = BACKGROUND_BLACK | FOREGROUND_WHITE;
 
-uint_8 lastKBScanCode = NULL;
+uint_8 lastKBScanCode = (const uint_8)NULL;
 bool KBToggle = false;
 bool PRINT_KB_INPUT = true;
 bool DEBUG_PRINT_SCAN_CODE = false;
 
-const char * DefaultStatus = "Ready";
+const string DefaultStatus = "Ready";
 
 bool LeftShiftPressed = false;
 bool RightShiftPressed = false;
+bool CapsLock = false;
+
+uint_8 ShiftMode(uint_8 scanCode, uint_8 chr) {
+	// Default = original character
+	uint_8 newchr = chr;
+	
+	// Alphabet
+	if (0x61 <= chr <= 0x7a) 					newchr = chr - 32; 
+	
+	if (!CapsLock)	// DO NOT DO THE FOLLLOWING IF CAPS IS ON.
+	{	
+		// Numbers ==> Symbols
+		if (chr == 0x31) 						newchr = 0x21;
+		if (chr == 0x32)					newchr = 0x40;
+		if (0x33 <= chr <= 0x35)			newchr = chr - 0x10;
+		if (chr == 0x36)					newchr = 0x5e;
+		if (chr == 0x37)					newchr = 0x26;
+		if (chr == 0x38)					newchr = 0x2a;
+		if (chr == 0x39)					newchr = 0x28;
+		if (chr == 0x30)					newchr = 0x29;
+
+		// [] ==> {}
+		if (chr == 0x5b || chr == 0x5d)	newchr = chr + 0x20;
+
+		// ` ==> ~
+		if (chr == 0x60)					newchr = 0x7e;
+
+		// -, = ==> _, +
+		if (chr == 0x2d)					newchr = 0x5f;
+		if (chr == 0x3d)					newchr = 0x2b;
+
+		// \ ==> (pipe)
+		if (chr == 0x5c)					newchr = 0x7c;
+
+		// ;, ' ==> :, "
+		if (chr == 0x3b)					newchr = 0x3a;
+		if (chr == 0x27)					newchr = 0x22;
+
+		// ,, ., / ==> <, >, ?
+		if (chr == 0x2c || chr == 0x2e || chr == 0x2f) newchr = chr + 0x10;
+
+	}
+	return newchr;
+}
 
 void UpdateStatus(const char * Status, bool blinking=true) {
 	const char * name_string = "by Geetansh Gautam";
-
+	Status = PRINT_KB_INPUT ? Status : "KEYBOARD DISABLED";
 	SysCommand = true;
 
 	uint_16 ogPos = CursorPosition;
 	FillRow(24, StatusConstantColor);
 	SetCursorPosition(PositionFromCoords(0, 24));
-	PrintString(Status, (blinking ? StatusColor : StatusConstantColor));
+	PrintString(Status, ((blinking && PRINT_KB_INPUT) ? StatusColor : StatusConstantColor));
 	SetCursorPosition(PositionFromCoords(62, 24));
 	PrintString(name_string, StatusConstantColor);
 	SetCursorPosition(ogPos);
@@ -90,14 +135,20 @@ void stdKBHandler(uint_8 scanCode, uint_8 chr) {
 			} case 0x9c: {
 				PrintString("\n\r");
 				break;
+			} case 0x3A : {
+				CapsLock = !CapsLock;
+				if (CapsLock) UpdateStatus("CAPS LOCK", false);
+				else UpdateStatus(DefaultStatus);
+				break;
 			}
 		}
 	}
-	if (chr != 0)
+
+	if (chr != 0 && PRINT_KB_INPUT)
 	{
-		switch (LeftShiftPressed || RightShiftPressed) {
+		switch ((LeftShiftPressed || RightShiftPressed) != CapsLock) {
 			case true:
-				PrintChar(chr - 32);
+				PrintChar(ShiftMode(scanCode, chr));
 				break;
 			case false:
 				PrintChar(chr);
@@ -167,6 +218,13 @@ extern "C" void _start() {
 	PrintString(PBText);
 	MainKeyboardHandler = KBHandler;
 	AwaitKBInput(0x00, true);
+	PRINT_KB_INPUT = true;
+
+	// const string OG = "Hello, World!";
+	// const string delim = " ";
+
+	// string* p = StrTok(OG, delim);
+	// PrintString(IntToStr(sizeof(p)));
 
 	ClearScreen();
 	UpdateStatus(DefaultStatus);
