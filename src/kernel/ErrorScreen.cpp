@@ -1,8 +1,8 @@
 #pragma once
 #include "TextPrint.cpp"
 #include "UI.cpp"
-#include "typedefs.cpp"
-#include "TextModeColorCodes.cpp"
+#include "typedefs.h"
+#include "TextModeColorCodes.h"
 
 void ErrStatusBar(const char* status) {
     SysCommand = true;

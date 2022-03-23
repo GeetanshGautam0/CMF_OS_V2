@@ -1,6 +1,6 @@
 #pragma once
 #include "TextPrint.cpp"
-#include "typedefs.cpp"
+#include "typedefs.h"
 #include "Control.cpp"
 
 uint_8 StatusColor = BACKGROUND_BLINKING_BLUE | FOREGROUND_LIGHT_GRAY;

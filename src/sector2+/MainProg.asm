@@ -3,9 +3,12 @@ jmp EnterProtectedMode
 
 %include "src/lib/16b/GDT.asm"
 %include "src/lib/16b/Print.asm"
+%include "src/lib/16b/DetectMem.asm"
 
 
 EnterProtectedMode:
+	call DetectMemory
+
 	mov bx, EnteringText
 	call PrintString
 

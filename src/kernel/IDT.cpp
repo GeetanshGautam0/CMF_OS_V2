@@ -1,9 +1,9 @@
 #pragma once
-#include "typedefs.cpp"
-#include "KBScanCodeSet1.cpp"
+#include "typedefs.h"
+#include "KBScanCodeSet1.h"
 #include "IO.cpp"
 #include "TextPrint.cpp"
-#include "TextModeColorCodes.cpp"
+#include "TextModeColorCodes.h"
 
 struct IDT64{
   uint_16 offset_low;

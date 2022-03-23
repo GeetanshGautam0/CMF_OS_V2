@@ -1,7 +1,7 @@
 #pragma once
 #include "IO.cpp"
-#include "typedefs.cpp"
-#include "TextModeColorCodes.cpp"
+#include "typedefs.h"
+#include "TextModeColorCodes.h"
 
 #define VGA_MEMORY (unsigned char*)0xb8000
 #define VGA_WIDTH 80

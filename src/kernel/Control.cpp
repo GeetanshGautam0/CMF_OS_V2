@@ -1,5 +1,5 @@
 #pragma once
-#include "typedefs.cpp"
+#include "typedefs.h"
 
 bool LeftShiftPressed       = false;
 bool RightShiftPressed      = false;

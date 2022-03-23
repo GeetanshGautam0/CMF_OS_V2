@@ -1,38 +1,11 @@
 #pragma once
 #include "TextPrint.cpp"
-#include "typedefs.cpp"
+#include "typedefs.h"
 #include "Control.cpp"
 #include "UI.cpp"
 #include "ErrorScreen.cpp"
-// #include "string.cpp"
+#include "string.cpp"
 #include "ErrorCodes.cpp"
-
-int StringCPP_StrLen (const char * str) {
-    int i = 0;
-    for(; str[i] != 0; i++);
-    return i;
-}
-
-char * StringCPP_Concat (const char * str1, const char * str2, const char delim = ' ') {
-
-	const int len1 = StringCPP_StrLen(str1);
-	const int len2 = StringCPP_StrLen(str2);
-
-	// char arr [len1 + len2 + 2];
-	// PrintString(IntToStr(sizeof(arr)), ScreenColor, true);
-	PrintString(IntToStr(len1), ScreenColor, true);
-	PrintString(IntToStr(len2), ScreenColor, true);
-
-	// PrintString("\n\r");
-
-	// for (int i = 0; i < len1; i ++) arr[i] = str1[i];
-	// for (int i = 0; i < len2; i ++) arr[len1 + i] = str2[i];
-	// arr[len1] = delim;
-	// arr[len1 + len2 + 1] = '\0';
-
-	return "";
-
-}
 
 uint_8 _shift_alpha(uint_8 chr) { return chr - 32; }
 uint_8 _shift_non_alpha (uint_8 chr) {
@@ -90,8 +63,8 @@ void PrintSKStatus() {
 	// PrintString("\n\r");
 
 	if (LeftShiftPressed || RightShiftPressed) {
-		PrintString(StringCPP_Concat("Hello,", "World!"), true);
-		txt = ((sizeof(txt) > 0) ? StringCPP_Concat(txt, "SHIFT", '+'): (char*)"SHIFT");
+		PrintString(StrConcat("Hello,", "World!"), true);
+		txt = ((sizeof(txt) > 0) ? StrConcat(txt, "SHIFT", '+'): (char*)"SHIFT");
 	}
 
 	// PrintString("2 ");
@@ -99,7 +72,7 @@ void PrintSKStatus() {
 	// PrintString("\n\r");
 
 	if (ALTPressed) {
-		txt = ((sizeof(txt) > 0) ? StringCPP_Concat(txt, "ALT", '+'): (char*)"ALT");
+		txt = ((sizeof(txt) > 0) ? StrConcat(txt, "ALT", '+'): (char*)"ALT");
 	}
 
 	// PrintString("3 ");
