@@ -29,8 +29,8 @@ uint_16 PositionFromCoords(uint_8 x, uint_8 y) {
 void SetCursorPosition(uint_16 position) {
     uint_16 POS;
     
-    if (position > (SysCommand ? 2000 : PositionFromCoords(80, 22))) 
-        POS = (SysCommand ? 2000 : PositionFromCoords(80, 22));
+    if (position > (SysCommand ? 2000 : (PositionFromCoords(80, 22) - 1))) 
+        POS = (SysCommand ? 2000 : PositionFromCoords(80, 22) - 1);
     else if (position < 0) POS = 0;
     else POS = position;
     
@@ -42,7 +42,14 @@ void SetCursorPosition(uint_16 position) {
     CursorPosition = POS;
 }
 
-void PrintString(const char* str, uint_8 color = ScreenColor, unsigned char* MEM_ADDR = NULL) {
+void PrintChar(char chr, uint_8 color = ScreenColor) {
+    *(VGA_MEMORY + CursorPosition * 2) = chr;
+    *(VGA_MEMORY + CursorPosition * 2 + 1) = color;
+
+    SetCursorPosition(CursorPosition + 1);
+}
+
+void PrintString(const char* str, uint_8 color = ScreenColor, bool __auto_nl_cr = false) {
     uint_8* charPtr = (uint_8*)str;
     uint_16 index = CursorPosition;
     unsigned char* addrAdd = 0x00000;
@@ -65,6 +72,11 @@ void PrintString(const char* str, uint_8 color = ScreenColor, unsigned char* MEM
         }
 
         charPtr++;
+    }
+
+    if (__auto_nl_cr) {
+        index += VGA_WIDTH;
+        index -= index % VGA_WIDTH;
     }
 
     SetCursorPosition(index);
@@ -127,13 +139,6 @@ void FillRow(uint_8 RowIndex, uint_8 Color) {
 
 }
 
-void PrintChar(char chr, uint_8 color = ScreenColor) {
-    *(VGA_MEMORY + CursorPosition * 2) = chr;
-    *(VGA_MEMORY + CursorPosition * 2 + 1) = color;
-
-    SetCursorPosition(CursorPosition + 1);
-}
-
 void Backspace(uint_8 color = ScreenColor) {
     SetCursorPosition(CursorPosition == 0 ? 0 : CursorPosition - 1);
     *(VGA_MEMORY + CursorPosition * 2) = 0x20;
@@ -167,4 +172,50 @@ const string IntToStr(T value) {
     integerToStringOutput[size - index] = remainder + 48;
     integerToStringOutput[size + 1] = 0;
     return integerToStringOutput;
+}
+
+char floatToStringOutput[128];
+const char* FloatToStr(float value, uint_8 decimalPlaces) {
+	const bool negative = value < 0;
+
+    if (negative) value *= -1;
+
+	char* intPtr = (char*)IntToStr((int)value);
+	char* floatPtr = floatToStringOutput;
+
+    if (negative) {
+        *floatPtr = '-';
+        ++floatPtr;
+    }
+
+	while (*intPtr != 0) {
+		*floatPtr = *intPtr;
+		intPtr++;
+		floatPtr++;
+	}
+	*floatPtr = '.';
+	floatPtr++;
+
+	float newValue = value - (int)value;
+
+	for (uint_8 i = 0; i < decimalPlaces; i++) {
+		newValue *= 10;
+		*floatPtr = (int)newValue + 48;
+		newValue -= (int)newValue;
+		floatPtr++;
+	}
+
+	*floatPtr = 0;
+
+	return floatToStringOutput;
+}
+
+void PrintCenteredText(const char* text, uint_8 row, uint_8 color = ScreenColor) {
+    const int len = sizeof(text);
+    if (len > VGA_WIDTH) PrintString(text, color);
+
+    const uint_8 starterX = (uint_8)((VGA_WIDTH / 2) - (len / 2));
+    SetCursorPosition(PositionFromCoords(starterX, row));
+    PrintString(text, color);
+
 }
