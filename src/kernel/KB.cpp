@@ -38,9 +38,16 @@ uint_8 ShiftMode(uint_8 scanCode, uint_8 chr) {
 }
 
 uint_8 AwaitKBInput(uint_8 ScanCode, bool AnyKey = true) {
-    bool org = KBToggle;
-    while (lastKBScanCode == 0 || (KBToggle == org && (AnyKey || lastKBScanCode == ScanCode))) continue;
+    bool org = (bool)(int)KBToggle;
+	UpdateStatus("Waiting...");
+    while (lastKBScanCode == 0 && (KBToggle == org && (AnyKey || lastKBScanCode == ScanCode))) continue;
     return lastKBScanCode;
+}
+
+void SetKBEnabledStatus(bool KB_STATUS) {
+	PRINT_KB_INPUT = KB_STATUS;
+	if (CurrentStatus == DefaultStatus || CurrentStatus == KBDisabledStatus)
+		UpdateStatus(DefaultStatus);
 }
 
 void PrintSKStatus() {
@@ -53,35 +60,25 @@ void PrintSKStatus() {
 		return;
 	}
 
-	ClearScreen();
-
 	char * txt = "";
 
 	if (CTRLPressed) txt = "CTRL";
-	// PrintString("1 ");
-	// PrintString(txt);
-	// PrintString("\n\r");
-
 	if (LeftShiftPressed || RightShiftPressed) {
-		PrintString(StrConcat("Hello,", "World!"), true);
-		txt = ((sizeof(txt) > 0) ? StrConcat(txt, "SHIFT", '+'): (char*)"SHIFT");
+		if (StrLen(txt) > 0) {
+			char arr [VGA_WIDTH - 15];
+			txt = StrConcat(txt, "SHIFT", arr, '+');
+		} else txt = "SHIFT";
 	}
-
-	// PrintString("2 ");
-	// PrintString(txt);
-	// PrintString("\n\r");
-
 	if (ALTPressed) {
-		txt = ((sizeof(txt) > 0) ? StrConcat(txt, "ALT", '+'): (char*)"ALT");
+		if (StrLen(txt) > 0) {
+			char arr [VGA_WIDTH - 15];
+			txt = StrConcat(txt, "ALT", arr, '+');
+		} else txt = "ALT";
 	}
-
-	// PrintString("3 ");
-	// PrintString(txt);
-	// PrintString("\n\r");
 
 	if (LeftShiftPressed || RightShiftPressed || CTRLPressed || ALTPressed) 
-		// UpdateStatus(txt, false);
-		PrintString(txt);
+		UpdateStatus(txt, false);
+	else UpdateStatus(DefaultStatus);
 }
 
 void stdKBHandler(uint_8 scanCode, uint_8 chr) {
@@ -152,7 +149,7 @@ void stdKBHandler(uint_8 scanCode, uint_8 chr) {
 	}
 
 
-    if (DEBUG_PRINT_SCAN_CODE) PrintString(HexToString(scanCode), BACKGROUND_BLINKING_RED | FOREGROUND_WHITE);
+    if (DEBUG_PRINT_SCAN_CODE) PrintString(HexToString(scanCode), BACKGROUND_BLINKING_CYAN | FOREGROUND_BLUE);
     return;
 }
 

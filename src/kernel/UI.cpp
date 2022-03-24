@@ -9,12 +9,14 @@ uint_8 StatusTitleColor = BACKGROUND_BLUE | FOREGROUND_LIGHT_CYAN;
 uint_8 BackgroundColor = BACKGROUND_BLACK | FOREGROUND_WHITE;
 
 const char* DefaultStatus = "Ready";
+const char* KBDisabledStatus = "KEYBOARD DISABLED";
+char* CurrentStatus;
 
 void UpdateStatus(const char * Status, bool blinking=true) {
 	if (SYS_ERR) return;
 
 	const char * name_string = "Geetansh Gautam";
-	Status = PRINT_KB_INPUT ? Status : "KEYBOARD DISABLED";
+	if (Status == DefaultStatus) Status = PRINT_KB_INPUT ? Status : KBDisabledStatus;
 	SysCommand = true;
 
 	uint_16 ogPos = CursorPosition;
@@ -24,6 +26,8 @@ void UpdateStatus(const char * Status, bool blinking=true) {
 	SetCursorPosition(PositionFromCoords(65, 24));
 	PrintString(name_string, StatusConstantColor);
 	SetCursorPosition(ogPos);
+
+	CurrentStatus = (char*)Status;
 
 	SysCommand = false;
 }

@@ -9,23 +9,18 @@ int StrLen (const char * str) {
     return i;
 }
 
-char * StrConcat (const char * str1, const char * str2, const char delim = ' ') {
+template<size_t N>
+char* StrConcat (const char * str1, const char * str2, char (&array)[N], const char delim = ' ') {
 
 	const int len1 = StrLen(str1);
 	const int len2 = StrLen(str2);
 
-	// char arr [len1 + len2 + 2];
-	// PrintString(IntToStr(sizeof(arr)), ScreenColor, true);
-	PrintString(IntToStr(len1), ScreenColor, true);
-	PrintString(IntToStr(len2), ScreenColor, true);
+	for (int i = 0; i < (len1 >= N ? N : len1); i++) array[i] = str1[i];
+	if (len1 < N-1) {
+		for (int i = 0; (i + 1 + len1) < N; i++) array[len1+i+1] = str2[i];
+		array[len1] = delim;
+	}
+	array[N] = 0;
 
-	// PrintString("\n\r");
-
-	// for (int i = 0; i < len1; i ++) arr[i] = str1[i];
-	// for (int i = 0; i < len2; i ++) arr[len1 + i] = str2[i];
-	// arr[len1] = delim;
-	// arr[len1 + len2 + 1] = '\0';
-
-	return "";
-
+	return array;
 }
