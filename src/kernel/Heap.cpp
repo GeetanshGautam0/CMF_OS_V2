@@ -12,6 +12,7 @@ struct MemorySegmentHeader {
 };
 
 MemorySegmentHeader* FirstFreeMemSegment;
+bool __heap_func_avail = false;
 
 void InitHeap(uint_64 heapAddress, uint_64 heapLength) {
     FirstFreeMemSegment = (MemorySegmentHeader*)heapAddress;
@@ -21,9 +22,13 @@ void InitHeap(uint_64 heapAddress, uint_64 heapLength) {
     FirstFreeMemSegment->NextFreeSegment = 0;
     FirstFreeMemSegment->PreviousFreeSegment = 0;
     FirstFreeMemSegment->Free = true;
+    
+    __heap_func_avail = true;
 }
 
 void* malloc(uint_64 size) {
+    if (!__heap_func_avail) return 0;
+
     uint_64 remainder = size % 8;
     size -= remainder;
     if (remainder != 0) size += 8;

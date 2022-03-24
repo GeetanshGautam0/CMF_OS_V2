@@ -6,6 +6,7 @@
 #include "KB.cpp"
 #include "MemoryMap.cpp"
 #include "Heap.cpp"
+#include "Tests.cpp"
 
 extern const char PBText[];
 
@@ -29,8 +30,13 @@ extern "C" void _start() {
 
 	PrintString("Initializing Heap...\n\r"); 
 	InitHeap(0x100000, 0x100000);
+
+	const bool malloc_test_res = BOOT_malloc_test();
+	PrintString("\n\rRunning Tests:\n\r");
+	PrintString("\t[1] Memory allocate (malloc): ");
+	PrintString(malloc_test_res ? "PASS" : "FAIL", malloc_test_res ? OkayColor : FailColor, true);
+
 	PrintString(PBText);
-	
 	MainKeyboardHandler = KBHandler;
 	AwaitKBInput(0x00, true);
 	
@@ -39,17 +45,6 @@ extern "C" void _start() {
 	
 	SetKBEnabledStatus(true);
 
-	void* TestMemoryAddress = malloc(0x10);
-	PrintString("1"); 
-	void* TestMemoryAddress2 = malloc(0x10);
-	PrintString("2"); 
-	void* TestMemoryAddress3 = malloc(0x10);
-	PrintString("3"); 
-	
-	SetCursorPosition(0);
-	PrintString(HexToString((uint_64)TestMemoryAddress), ScreenColor, true);
-	PrintString(HexToString((uint_64)TestMemoryAddress2), ScreenColor, true);
-	PrintString(HexToString((uint_64)TestMemoryAddress3), ScreenColor, true);
 
 	return;
 }

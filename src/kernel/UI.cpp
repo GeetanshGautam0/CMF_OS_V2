@@ -8,6 +8,9 @@ uint_8 StatusConstantColor = BACKGROUND_BLUE | FOREGROUND_LIGHT_GRAY;
 uint_8 StatusTitleColor = BACKGROUND_BLUE | FOREGROUND_LIGHT_CYAN;
 uint_8 BackgroundColor = BACKGROUND_BLACK | FOREGROUND_WHITE;
 
+uint_8 OkayColor = BACKGROUND_BLACK | FOREGROUND_GREEN;
+uint_8 FailColor = BACKGROUND_BLACK | FOREGROUND_RED;
+
 const char* DefaultStatus = "Ready";
 const char* KBDisabledStatus = "KEYBOARD DISABLED";
 char* CurrentStatus;

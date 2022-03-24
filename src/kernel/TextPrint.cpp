@@ -63,6 +63,13 @@ void PrintString(const char* str, uint_8 color = ScreenColor, bool __auto_nl_cr 
             case 13: {                              // CR (\r) == 13
                 index -= index % VGA_WIDTH;
                 break;
+            } case 9: {                             // \t
+                for (int i = 0; i < 5; i++) {
+                    *(VGA_MEMORY + index * 2) = ' ';
+                    *(VGA_MEMORY + index * 2 + 1) = color;
+                    index++;
+                }
+                break;
             }
             default: {
                 *(VGA_MEMORY + index * 2) = *charPtr;
