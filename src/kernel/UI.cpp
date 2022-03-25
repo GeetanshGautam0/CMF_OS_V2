@@ -15,17 +15,20 @@ const char* DefaultStatus = "Ready";
 const char* KBDisabledStatus = "KEYBOARD DISABLED";
 char* CurrentStatus;
 
+bool __init_ui = false;
+
 void UpdateStatus(const char * Status, bool blinking=true) {
 	if (SYS_ERR) return;
+	if (!UI_LEGACY) return;
 
 	const char * name_string = "Geetansh Gautam";
-	if (Status == DefaultStatus) Status = PRINT_KB_INPUT ? Status : KBDisabledStatus;
+	if (Status == DefaultStatus) Status = !DIS_INPUT ? Status : KBDisabledStatus;
 	SysCommand = true;
 
 	uint_16 ogPos = CursorPosition;
 	FillRow(24, StatusConstantColor);
 	SetCursorPosition(PositionFromCoords(0, 24));
-	PrintString(Status, ((blinking && PRINT_KB_INPUT) ? StatusColor : StatusConstantColor));
+	PrintString(Status, ((blinking && !DIS_INPUT) ? StatusColor : StatusConstantColor));
 	SetCursorPosition(PositionFromCoords(65, 24));
 	PrintString(name_string, StatusConstantColor);
 	SetCursorPosition(ogPos);
@@ -36,6 +39,7 @@ void UpdateStatus(const char * Status, bool blinking=true) {
 }
 
 void InitUI() {
+	if (!__legacy_mode) return;
 	const char * title_string = "CMF OS m.2";
 	const char * status = "Initializing ...";
 
@@ -53,5 +57,6 @@ void InitUI() {
 	UpdateStatus(status);
 
 	SysCommand = false;
+	__init_ui = true;
 
 }

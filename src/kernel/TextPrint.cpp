@@ -2,9 +2,11 @@
 #include "IO.cpp"
 #include "typedefs.h"
 #include "TextModeColorCodes.h"
+#include "Control.cpp"
 
 #define VGA_MEMORY (unsigned char*)0xb8000
 #define VGA_WIDTH 80
+#define VGA_HEIGHT 25
 #define NULL 0
 
 #define MAX_X VGA_WIDTH
@@ -14,6 +16,7 @@ uint_16 CursorPosition;
 uint_8 ScreenColor = BACKGROUND_BLACK | FOREGROUND_WHITE;
 
 bool SysCommand = false;
+bool __legacy_mode = true;
 
 uint_16 PositionFromCoords(uint_8 x, uint_8 y) {
     if (!SysCommand) {
@@ -52,7 +55,6 @@ void PrintChar(char chr, uint_8 color = ScreenColor) {
 void PrintString(const char* str, uint_8 color = ScreenColor, bool __auto_nl_cr = false) {
     uint_8* charPtr = (uint_8*)str;
     uint_16 index = CursorPosition;
-    unsigned char* addrAdd = 0x00000;
 
     while (*charPtr != 0) {
         switch (*charPtr) {
@@ -225,4 +227,9 @@ void PrintCenteredText(const char* text, uint_8 row, uint_8 color = ScreenColor)
     SetCursorPosition(PositionFromCoords(starterX, row));
     PrintString(text, color);
 
+}
+
+void DisolveLegacyOverlay () {
+    __legacy_mode = false;
+    UI_LEGACY = false;
 }

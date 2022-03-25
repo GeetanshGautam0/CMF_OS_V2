@@ -7,11 +7,16 @@
 #include "MemoryMap.cpp"
 #include "Heap.cpp"
 #include "Tests.cpp"
+#include "ScreenPrint.cpp"
 
 extern const char PBText[];
 
 extern "C" void _start() {
 	InitUI();
+	
+	PRINT_KB_INPUT = true;
+	DEBUG_PRINT_SCAN_CODE = false;
+	SetKBEnabledStatus(true);
 	
 	ClearScreen(BackgroundColor);
 	UpdateStatus("Initializing IDT...");
@@ -25,8 +30,6 @@ extern "C" void _start() {
 		MemoryMapEntry* memMap = UsableMemMaps[i];
 		PrintMemoryMap(memMap, CursorPosition);
 	}
-	PRINT_KB_INPUT = false;
-	DEBUG_PRINT_SCAN_CODE = false;
 
 	PrintString("Initializing Heap...\n\r"); 
 	InitHeap(0x100000, 0x100000);
@@ -35,16 +38,14 @@ extern "C" void _start() {
 	PrintString("\n\rRunning Tests:\n\r");
 	PrintString("\t[1] Memory allocate (malloc): ");
 	PrintString(malloc_test_res ? "PASS" : "FAIL", malloc_test_res ? OkayColor : FailColor, true);
-
 	PrintString(PBText);
 	MainKeyboardHandler = KBHandler;
-	AwaitKBInput(0x00, true);
-	
-	ClearScreen();
-	UpdateStatus(DefaultStatus);
-	
-	SetKBEnabledStatus(true);
+	AwaitKBInput(0x1c, false);
+	DisolveLegacyOverlay();
+	SetCursorPosition(0);
 
+	clear_screen_history();
+	output_screen_buffer();
 
 	return;
 }

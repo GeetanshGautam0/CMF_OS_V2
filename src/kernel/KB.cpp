@@ -40,12 +40,16 @@ uint_8 ShiftMode(uint_8 scanCode, uint_8 chr) {
 uint_8 AwaitKBInput(uint_8 ScanCode, bool AnyKey = true) {
     bool org = (bool)(int)KBToggle;
 	UpdateStatus("Waiting...");
-    while (lastKBScanCode == 0 && (KBToggle == org && (AnyKey || lastKBScanCode == ScanCode))) continue;
+    while (lastKBScanCode == 0 || (KBToggle == org && (AnyKey || lastKBScanCode == ScanCode))) continue;
     return lastKBScanCode;
 }
 
+void SetKBPrintStatus(bool KB_PRINT_STATUS) {
+	PRINT_KB_INPUT = KB_PRINT_STATUS;
+}
+
 void SetKBEnabledStatus(bool KB_STATUS) {
-	PRINT_KB_INPUT = KB_STATUS;
+	DIS_INPUT = !KB_STATUS;
 	if (CurrentStatus == DefaultStatus || CurrentStatus == KBDisabledStatus)
 		UpdateStatus(DefaultStatus);
 }
@@ -153,7 +157,7 @@ void stdKBHandler(uint_8 scanCode, uint_8 chr) {
     return;
 }
 
-void KBHandler_ArrowKeys(uint_8 scanCode) {
+void stdKBHandler_ArrowKeys(uint_8 scanCode) {
 	switch (scanCode)
 	{
 		case 0x50: { // Down arrow
@@ -178,20 +182,38 @@ void KBHandler_ArrowKeys(uint_8 scanCode) {
 	}
 }
 
+void NLKBHandler_ArrowKeys(uint_8 scanCode) {} 
+
+void NLKBHandler(uint_8 scanCode, uint_8 chr) {}
+
 void KBHandler(uint_8 scanCode, uint_8 chr) {
 	
 	if (DIS_INPUT) return;
 
-	switch (lastKBScanCode) {
-		case 0xe0 : {				// Arrows
-			KBHandler_ArrowKeys(scanCode);
-			break;
-		}
+	if (UI_LEGACY)
+	{
+		switch (lastKBScanCode) {
+			case 0xe0 : {				// Arrows
+				stdKBHandler_ArrowKeys(scanCode);
+				break;
+			}
 
-		default:
-			stdKBHandler(scanCode, chr);
+			default:
+				stdKBHandler(scanCode, chr);
+		}
 	}
-	
+	else 
+	{
+		switch (lastKBScanCode) {
+			case 0x0e0 : {
+				NLKBHandler_ArrowKeys(scanCode);
+				break;
+			}
+
+			default:
+				NLKBHandler(scanCode, chr);
+		}
+	}
 	lastKBScanCode = scanCode;
 	return;
 }
